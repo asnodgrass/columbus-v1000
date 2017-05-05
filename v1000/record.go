@@ -223,7 +223,7 @@ func parseTemperature(file *os.File, rec *Record) error {
 func parseV1000Date(value uint32) (Date) {
   var date Date
   date.Year   = (shift(value, uint32(0x3f << 26)) >> 26) + 2016
-  date.Month  = (shift(value, uint32(0xf  << 22)) >> 22) - 1
+  date.Month  = (shift(value, uint32(0xf  << 22)) >> 22) //- 1
   date.Day    =  shift(value, uint32(0x1f << 17)) >> 17
   date.Hour   =  shift(value, uint32(0x1f << 12)) >> 12
   date.Minute =  shift(value, uint32(0x3f << 6))  >> 6
