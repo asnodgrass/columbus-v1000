@@ -101,7 +101,8 @@ func printHeader(out *os.File) {
 		"TEMP",
 	}
 	hdr := strings.Join(fields, ",")
-	fmt.Fprintln(out, hdr)
+	fmt.Fprint(out, hdr)
+	fmt.Fprint(out, "\r\n")
 }
 
 func printRow(rec *v1000.Record, out *os.File) {
@@ -110,8 +111,8 @@ func printRow(rec *v1000.Record, out *os.File) {
 		rec.Type,
 		formatDateCSV(rec.Time),
 		formatTimeCSV(rec.Time),
-		fmt.Sprintf("%f", rec.Latitude),
-		fmt.Sprintf("%f", rec.Longitude),
+		formatLatLon(rec.Latitude, true),
+		formatLatLon(rec.Longitude, false),
 		fmt.Sprintf("%d", rec.Altitude),
 		fmt.Sprintf("%.1f", rec.Speed),
 		fmt.Sprintf("%d", rec.Heading),
@@ -119,7 +120,8 @@ func printRow(rec *v1000.Record, out *os.File) {
 		fmt.Sprintf("%d", rec.Temperature),
 	}
 	row := strings.Join(fields, ",")
-	fmt.Fprintln(out, row)
+	fmt.Fprint(out, row)
+	fmt.Fprint(out, "\r\n")
 }
 
 func formatDateCSV(date v1000.Date) string {
@@ -128,4 +130,24 @@ func formatDateCSV(date v1000.Date) string {
 
 func formatTimeCSV(date v1000.Date) string {
 	return fmt.Sprintf("%02d%02d%02d", date.Hour, date.Minute, date.Second)
+}
+
+func formatLatLon(latLon float32, northSouth bool) string {
+	x := true
+	var dir string
+	if latLon < 0 {
+		latLon = -latLon
+		x = false
+	}
+	switch {
+	case northSouth && x:
+		dir = "N"
+	case northSouth && !x:
+		dir = "S"
+	case !northSouth && x:
+		dir = "E"
+	case !northSouth && !x:
+		dir = "W"
+	}
+	return fmt.Sprintf("%.6f%s", latLon, dir)
 }
