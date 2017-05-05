@@ -84,15 +84,14 @@ func init() {
 	gpxCmd.Flags().StringVarP(&outFile, "out-file", "o", "", "output file")
 }
 
-// GPXTrackPoint ...
 type trackPoint struct {
   XMLName xml.Name `xml:"trkpt"`
-  Latitude float32 `xml:"lat,attr"`
-  Longitude float32 `xml:"lon,attr"`
+  Latitude latLong `xml:"lat,attr"`
+  Longitude latLong `xml:"lon,attr"`
+  Altitude other `xml:"ele"`
   Time string `xml:"time"`
-  Altitude uint32 `xml:"ele"`
-  Speed float32 `xml:"speed"`
-  Heading uint16 `xml:"course"`
+  Heading other `xml:"course"`
+  Speed other `xml:"speed"`
 }
 
 type trackSegment struct {
@@ -107,23 +106,49 @@ type track struct {
   TrackSegments []trackSegment `xml:"trkseg"`
 }
 
-type header struct {
+type gpxBounds struct {
+	XMLName xml.Name `xml:"bounds"`
+	MinLat latLong `xml:"minlat,attr"`
+	MinLon latLong `xml:"minlon,attr"`
+	MaxLat latLong `xml:"maxlat,attr"`
+	MaxLon latLong `xml:"maxlon,attr"`
+}
+
+type gpxHeader struct {
   XMLName xml.Name `xml:"gpx"`
   Version string `xml:"version,attr"`
   Creator string `xml:"creator,attr"`
   Namespace string `xml:"xmlns,attr"`
   Time string `xml:"time"`
-	Bounds string `xml:"bounds"`
+	Bounds gpxBounds `xml:"bounds"`
   Track track `xml:"trk"`
+}
+
+// latLong ...
+type latLong float32
+// other ...
+type other float32
+
+// MarshalXMLAttr ...
+func (value latLong) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	formatted := fmt.Sprintf("%.9f", value)
+	return xml.Attr{Name: name, Value: formatted}, nil
+}
+
+// MarshalXML ...
+func (value other) MarshalXML(e *xml.Encoder, start xml.StartElement) (error) {
+	formatted := fmt.Sprintf("%.6f", value)
+	e.EncodeElement(formatted, start)
+	return nil
 }
 
 func recordToTrackPoint(rec v1000.Record) (trackPoint) {
   tp := trackPoint{
-    Latitude: rec.Latitude,
-    Longitude: rec.Longitude,
-    Altitude: rec.Altitude,
-    Speed: rec.Speed,
-    Heading: rec.Heading,
+    Latitude: latLong(rec.Latitude),
+    Longitude: latLong(rec.Longitude),
+    Altitude: other(rec.Altitude),
+    Speed: other(rec.Speed),
+    Heading: other(rec.Heading),
     Time: formatDateRFC3339(rec.Time, timeZone),
   }
   return tp
@@ -132,14 +157,29 @@ func recordToTrackPoint(rec v1000.Record) (trackPoint) {
 func generateGPX(trkpts []trackPoint) []byte {
   trksegs := make([]trackSegment, 1)
   trksegs[0].TrackPoints = trkpts
-  trk := track{TrackSegments: trksegs}
-  trk.Name = "please fix me"
-  trk.Description = "fix this too"
-  gpx := header{Track: trk}
-  gpx.Version = "1.0"
-  gpx.Namespace = "http://www.topografix.com/GPX/1/0"
-  gpx.Creator = "columbus-v1000"
-  gpx.Time = time.Now().UTC().Format(time.RFC3339)
+
+  trk := track{
+		TrackSegments: trksegs,
+		Name: "please fix me",
+		Description: "and this too",
+	}
+
+	bounds := gpxBounds{
+		MinLat: minimumLatitude(trkpts),
+		MinLon: minimumLongitude(trkpts),
+		MaxLat: maximumLatitude(trkpts),
+		MaxLon: maximumLongitude(trkpts),
+	}
+
+  gpx := gpxHeader{
+		Track: trk,
+	  Version: "1.0",
+	  Namespace: "http://www.topografix.com/GPX/1/0",
+	  Creator: "columbus-v1000",
+	  Time: time.Now().UTC().Format(time.RFC3339),
+		Bounds: bounds,
+	}
+
   body, err := xml.MarshalIndent(gpx, "", "  ")
   if err != nil {
     log.Fatal(err)
@@ -163,4 +203,44 @@ func formatDateRFC3339(date v1000.Date, zone string) (string) {
   }
   t := time.Date(yr, mon, day, hr, min, sec, 0, tz)
   return t.Format(time.RFC3339)
+}
+
+func minimumLatitude(trkpts []trackPoint) latLong {
+	low := latLong(91.0)
+	for i := 0; i < len(trkpts); i++ {
+		if trkpts[i].Latitude < low {
+			low = trkpts[i].Latitude
+		}
+	}
+	return low
+}
+
+func minimumLongitude(trkpts []trackPoint) latLong {
+	low := latLong(181.0)
+	for i := 0; i < len(trkpts); i++ {
+		if trkpts[i].Longitude < low {
+			low = trkpts[i].Longitude
+		}
+	}
+	return low
+}
+
+func maximumLatitude(trkpts []trackPoint) latLong {
+	high := latLong(-91.0)
+	for i := 0; i < len(trkpts); i++ {
+		if trkpts[i].Latitude > high {
+			high = trkpts[i].Latitude
+		}
+	}
+	return high
+}
+
+func maximumLongitude(trkpts []trackPoint) latLong {
+	high := latLong(-181.0)
+	for i := 0; i < len(trkpts); i++ {
+		if trkpts[i].Longitude > high {
+			high = trkpts[i].Longitude
+		}
+	}
+	return high
 }
