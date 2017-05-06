@@ -55,12 +55,12 @@ func CheckHeader(file *os.File) (bool, error) {
   if err != nil {
     return false, err
   }
-	return hdr == 1799, nil
+  return hdr == 1799, nil
 }
 
 // ParseRecord ...
 func ParseRecord(file *os.File) (Record, error) {
-	var rec Record
+  var rec Record
 
   err := parseIndex(file, &rec)
   if err != nil {
@@ -98,47 +98,47 @@ func ParseRecord(file *os.File) (Record, error) {
   if err != nil {
     return rec, err
   }
-	return rec, nil
+  return rec, nil
 }
 
 func parseShort(file *os.File) (uint16, error) {
-	var value uint16
-	err := binary.Read(file, binary.BigEndian, &value)
-	if err != nil {
+  var value uint16
+  err := binary.Read(file, binary.BigEndian, &value)
+  if err != nil {
     return 0, err
-	}
-	return value, nil
+  }
+  return value, nil
 }
 
 func parseLong(file *os.File) (uint32, error) {
-	var value uint32
-	err := binary.Read(file, binary.BigEndian, &value)
-	if err != nil {
+  var value uint32
+  err := binary.Read(file, binary.BigEndian, &value)
+  if err != nil {
     return 0, err
-	}
-	return value, nil
+  }
+  return value, nil
 }
 
 func parseIndex(file *os.File, rec *Record) (error) {
-	data := make([]byte, 3)
-	_, err := file.Read(data)
-	if err != nil {
+  data := make([]byte, 3)
+  _, err := file.Read(data)
+  if err != nil {
     return err
-	}
-	rec.Index = uint32(data[2]) | uint32(data[1])<<8 | uint32(data[0])<<16
+  }
+  rec.Index = uint32(data[2]) | uint32(data[1])<<8 | uint32(data[0])<<16
   return nil
 }
 
 // FIXME: rename this
 func parseByte3(file *os.File, rec *Record) (error) {
-	var byte3 byte
-	err := binary.Read(file, binary.BigEndian, &byte3)
-	if err != nil {
+  var byte3 byte
+  err := binary.Read(file, binary.BigEndian, &byte3)
+  if err != nil {
     return err
-	}
-	if hasBit(byte3, 0) && !hasBit(byte3, 1) {
+  }
+  if hasBit(byte3, 0) && !hasBit(byte3, 1) {
     rec.Type = "P"
-	} else {
+  } else {
     rec.Type = "T"
   }
   rec.South = hasBit(byte3, 2)
@@ -147,12 +147,12 @@ func parseByte3(file *os.File, rec *Record) (error) {
 }
 
 func parseTime(file *os.File, rec *Record) (error) {
-	value, err := parseLong(file)
+  value, err := parseLong(file)
   if err != nil {
     return err
   }
   rec.Time = parseV1000Date(value)
-	return nil
+  return nil
 }
 
 func parseCoords(file *os.File, rec *Record) (error) {
@@ -232,7 +232,7 @@ func parseV1000Date(value uint32) (Date) {
 }
 
 func hasBit(b byte, pos uint) bool {
-	return (b >> pos & 0x1) == 0x1
+  return (b >> pos & 0x1) == 0x1
 }
 
 func shift(value uint32, shifter uint32) (uint32) {

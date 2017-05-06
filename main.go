@@ -21,5 +21,5 @@ package main
 import "github.com/asnodgrass/columbus-v1000/cmd"
 
 func main() {
-	cmd.Execute()
+  cmd.Execute()
 }

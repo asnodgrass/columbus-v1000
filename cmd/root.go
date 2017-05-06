@@ -19,10 +19,10 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
+  "fmt"
+  "os"
 
-	"github.com/spf13/cobra"
+  "github.com/spf13/cobra"
 )
 
 var cfgFile string
@@ -32,20 +32,20 @@ var timeZone = "UTC"
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "columbus-v1000",
-	Short: "A converter for Columbus V1000 GPS files",
-	Long: `A converter for Columbus V1000 GPS files.`,
+  Use:   "columbus-v1000",
+  Short: "A converter for Columbus V1000 GPS files",
+  Long: `A converter for Columbus V1000 GPS files.`,
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	if err := RootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
+  if err := RootCmd.Execute(); err != nil {
+    fmt.Println(err)
+    os.Exit(-1)
+  }
 }
 
 func init() {
-	RootCmd.PersistentFlags().StringVarP(&timeZone, "timezone", "z", "", "Timezone for input file (default: UTC)")
+  RootCmd.PersistentFlags().StringVarP(&timeZone, "timezone", "z", "", "Timezone for input file (default: UTC)")
 }
