@@ -22,7 +22,7 @@ GPX is the most widely used format, but also the most verbose; the binary format
 is the best choice to get the most out of the limited device storage.
 
 Use this tool to convert binary format files into your choice of CSV or GPX.
-[gpxbabel][] can be used to convert from GPX into many other possible formats.
+[gpsbabel][] can be used to convert from GPX into many other possible formats.
 
 ## Installation
 
@@ -35,3 +35,5 @@ Pull requests are welcomed.
 ## License
 
 [GNU General Public License v3](LICENSE)
+
+[gpsbabel]: <https://www.gpsbabel.org/>
