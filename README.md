@@ -26,11 +26,36 @@ Use this tool to convert binary format files into your choice of CSV or GPX.
 
 ## Installation
 
-Docs coming soon
+Assuming Go has been installed locally:
+
+    go get github.com/asnodgrass/columbus-v1000
+    go install github.com/asnodgrass/columbus-v1000
+
+## Usage
+
+The syntax and arguments to convert to either GPX or CSV are nearly identical:
+
+    Converts a Columbus V1000 GPS file to CSV format.
+
+    Usage:
+      columbus-v1000 csv [flags]
+
+    Flags:
+      -i, --in-file string    input file (required)
+      -o, --out-file string   output file
+
+    Global Flags:
+      -z, --timezone string   Timezone for input file (default: UTC)
+
+For GPX conversion, use `gpx` rather than `csv`.
+
+The `--out-file` flag can be omitted, in which case the result will be sent to
+stdout.
 
 ## Contributing
 
-Pull requests are welcomed.
+There are likely many things that can be improved here. Pull requests are
+welcomed!
 
 ## License
 
