@@ -19,135 +19,135 @@
 package cmd
 
 import (
-	"os"
-	"fmt"
-	"io"
-	"strings"
+  "os"
+  "fmt"
+  "io"
+  "strings"
 
-	"github.com/spf13/cobra"
-	"github.com/asnodgrass/columbus-v1000/v1000"
+  "github.com/spf13/cobra"
+  "github.com/asnodgrass/columbus-v1000/v1000"
 )
 
 // csvCmd represents the csv command
 var csvCmd = &cobra.Command{
-	Use:   "csv",
-	Short: "Converts to CSV format",
-	Long: `Converts a Columbus V1000 GPS file to CSV format.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if inFile == "" {
-			fmt.Println("error: input file required")
-			return
-		}
+  Use:   "csv",
+  Short: "Converts to CSV format",
+  Long: `Converts a Columbus V1000 GPS file to CSV format.`,
+  Run: func(cmd *cobra.Command, args []string) {
+    if inFile == "" {
+      fmt.Println("error: input file required")
+      return
+    }
 
-		file, err := os.Open(inFile)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer file.Close()
+    file, err := os.Open(inFile)
+    if err != nil {
+      fmt.Println(err)
+      return
+    }
+    defer file.Close()
 
-		var out *os.File
+    var out *os.File
 
-		if outFile != "" {
-			out, err = os.Open(outFile)
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			defer out.Close()
-		} else {
-			out = os.Stdout
-		}
+    if outFile != "" {
+      out, err = os.Open(outFile)
+      if err != nil {
+        fmt.Println(err)
+        return
+      }
+      defer out.Close()
+    } else {
+      out = os.Stdout
+    }
 
-		ok, err := v1000.CheckHeader(file)
-		if err != nil || !ok {
-			fmt.Println(err)
-			return
-		}
+    ok, err := v1000.CheckHeader(file)
+    if err != nil || !ok {
+      fmt.Println(err)
+      return
+    }
 
-		printHeader(out)
-		for {
-			rec, err := v1000.ParseRecord(file)
-			if err == io.EOF {
-				break
-			}
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			printRow(&rec, out)
-		}
-	},
+    printHeader(out)
+    for {
+      rec, err := v1000.ParseRecord(file)
+      if err == io.EOF {
+        break
+      }
+      if err != nil {
+        fmt.Println(err)
+        return
+      }
+      printRow(&rec, out)
+    }
+  },
 }
 
 func init() {
-	RootCmd.AddCommand(csvCmd)
-	csvCmd.Flags().StringVarP(&inFile, "in-file", "i", "", "input file (required)")
-	csvCmd.Flags().StringVarP(&outFile, "out-file", "o", "", "output file")
+  RootCmd.AddCommand(csvCmd)
+  csvCmd.Flags().StringVarP(&inFile, "in-file", "i", "", "input file (required)")
+  csvCmd.Flags().StringVarP(&outFile, "out-file", "o", "", "output file")
 }
 
 func printHeader(out *os.File) {
-	fields := []string{
-		"INDEX",
-		"TAG",
-		"DATE",
-		"TIME",
-		"LATITUDE N/S",
-		"LONGITUDE E/W",
-		"HEIGHT",
-		"SPEED",
-		"HEADING",
-		"PRES",
-		"TEMP",
-	}
-	hdr := strings.Join(fields, ",")
-	fmt.Fprint(out, hdr)
-	fmt.Fprint(out, "\r\n")
+  fields := []string{
+    "INDEX",
+    "TAG",
+    "DATE",
+    "TIME",
+    "LATITUDE N/S",
+    "LONGITUDE E/W",
+    "HEIGHT",
+    "SPEED",
+    "HEADING",
+    "PRES",
+    "TEMP",
+  }
+  hdr := strings.Join(fields, ",")
+  fmt.Fprint(out, hdr)
+  fmt.Fprint(out, "\r\n")
 }
 
 func printRow(rec *v1000.Record, out *os.File) {
-	fields := []string{
-		fmt.Sprintf("%d", rec.Index),
-		rec.Type,
-		formatDateCSV(rec.Time),
-		formatTimeCSV(rec.Time),
-		formatLatLon(rec.Latitude, true),
-		formatLatLon(rec.Longitude, false),
-		fmt.Sprintf("%d", rec.Altitude),
-		fmt.Sprintf("%.1f", rec.Speed),
-		fmt.Sprintf("%d", rec.Heading),
-		fmt.Sprintf("%.1f", rec.Pressure),
-		fmt.Sprintf("%d", rec.Temperature),
-	}
-	row := strings.Join(fields, ",")
-	fmt.Fprint(out, row)
-	fmt.Fprint(out, "\r\n")
+  fields := []string{
+    fmt.Sprintf("%d", rec.Index),
+    rec.Type,
+    formatDateCSV(rec.Time),
+    formatTimeCSV(rec.Time),
+    formatLatLon(rec.Latitude, true),
+    formatLatLon(rec.Longitude, false),
+    fmt.Sprintf("%d", rec.Altitude),
+    fmt.Sprintf("%.1f", rec.Speed),
+    fmt.Sprintf("%d", rec.Heading),
+    fmt.Sprintf("%.1f", rec.Pressure),
+    fmt.Sprintf("%d", rec.Temperature),
+  }
+  row := strings.Join(fields, ",")
+  fmt.Fprint(out, row)
+  fmt.Fprint(out, "\r\n")
 }
 
 func formatDateCSV(date v1000.Date) string {
-	return fmt.Sprintf("%02d%02d%02d", date.Year - 2000, date.Month, date.Day)
+  return fmt.Sprintf("%02d%02d%02d", date.Year - 2000, date.Month, date.Day)
 }
 
 func formatTimeCSV(date v1000.Date) string {
-	return fmt.Sprintf("%02d%02d%02d", date.Hour, date.Minute, date.Second)
+  return fmt.Sprintf("%02d%02d%02d", date.Hour, date.Minute, date.Second)
 }
 
 func formatLatLon(latLon float32, northSouth bool) string {
-	x := true
-	var dir string
-	if latLon < 0 {
-		latLon = -latLon
-		x = false
-	}
-	switch {
-	case northSouth && x:
-		dir = "N"
-	case northSouth && !x:
-		dir = "S"
-	case !northSouth && x:
-		dir = "E"
-	case !northSouth && !x:
-		dir = "W"
-	}
-	return fmt.Sprintf("%.6f%s", latLon, dir)
+  x := true
+  var dir string
+  if latLon < 0 {
+    latLon = -latLon
+    x = false
+  }
+  switch {
+  case northSouth && x:
+    dir = "N"
+  case northSouth && !x:
+    dir = "S"
+  case !northSouth && x:
+    dir = "E"
+  case !northSouth && !x:
+    dir = "W"
+  }
+  return fmt.Sprintf("%.6f%s", latLon, dir)
 }
