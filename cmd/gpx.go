@@ -125,9 +125,9 @@ type gpxHeader struct {
 }
 
 // latLong ...
-type latLong float32
+type latLong float64
 // other ...
-type other float32
+type other float64
 
 // MarshalXMLAttr ...
 func (value latLong) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {

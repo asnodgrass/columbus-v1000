@@ -28,14 +28,14 @@ type Record struct {
   Index uint32
   Type string
   Time Date
-  Longitude float32
+  Longitude float64
   South bool
-  Latitude float32
+  Latitude float64
   West bool
   Altitude uint32
-  Speed float32
+  Speed float64
   Heading uint16
-  Pressure float32
+  Pressure float64
   Temperature uint16
 }
 
@@ -160,7 +160,7 @@ func parseCoords(file *os.File, rec *Record) (error) {
   if err != nil {
     return err
   }
-  rec.Latitude = float32(value) / 1000000.0
+  rec.Latitude = float64(value) / 1000000.0
   if rec.South {
     rec.Latitude = -rec.Latitude
   }
@@ -168,7 +168,7 @@ func parseCoords(file *os.File, rec *Record) (error) {
   if err != nil {
     return err
   }
-  rec.Longitude = float32(value) / 1000000.0
+  rec.Longitude = float64(value) / 1000000.0
   if rec.West {
     rec.Longitude = -rec.Longitude
   }
@@ -189,7 +189,7 @@ func parseSpeed(file *os.File, rec *Record) error {
   if err != nil {
     return err
   }
-  rec.Speed = float32(value / 10)
+  rec.Speed = float64(value) / 10.0
   return nil
 }
 
@@ -207,7 +207,7 @@ func parsePressure(file *os.File, rec *Record) error {
   if err != nil {
     return err
   }
-  rec.Pressure = float32(value / 10)
+  rec.Pressure = float64(value) / 10.0
   return nil
 }
 

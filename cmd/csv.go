@@ -132,7 +132,7 @@ func formatTimeCSV(date v1000.Date) string {
   return fmt.Sprintf("%02d%02d%02d", date.Hour, date.Minute, date.Second)
 }
 
-func formatLatLon(latLon float32, northSouth bool) string {
+func formatLatLon(latLon float64, northSouth bool) string {
   x := true
   var dir string
   if latLon < 0 {
