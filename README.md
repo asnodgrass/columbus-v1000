@@ -28,7 +28,8 @@ Use this tool to convert binary format files into your choice of CSV or GPX.
 
 ## Installation
 
-Assuming Go has been installed locally:
+Download the [release binaries][] from Github, or build your own. Assuming Go
+has been installed locally:
 
     go get github.com/asnodgrass/columbus-v1000
     go install github.com/asnodgrass/columbus-v1000
@@ -64,3 +65,4 @@ welcomed!
 [GNU General Public License v3](LICENSE)
 
 [gpsbabel]: <https://www.gpsbabel.org/>
+[release binaries]: <https://github.com/asnodgrass/columbus-v1000/releases>
