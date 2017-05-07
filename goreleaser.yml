@@ -1,0 +1,16 @@
+build:
+  binary: columbus-v1000
+  goos:
+    - linux
+    - darwin
+    - windows
+  goarch:
+    - amd64
+archive:
+  format: tar.gz
+  format_overrides:
+    - goos: windows
+      format: zip
+  replacements:
+    amd64: 64-bit
+    darwin: macOS
