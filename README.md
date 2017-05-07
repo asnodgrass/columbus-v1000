@@ -1,5 +1,7 @@
 # columbus-v1000
 
+[![Build Status](https://travis-ci.org/asnodgrass/columbus-v1000.svg?branch=master)](https://travis-ci.org/asnodgrass/columbus-v1000)
+
 columbus-v1000 is a command line tool authored in Go to convert the binary
 `.gps` files produced by a Columbus V1000 into CSV or GPX formats.
 
