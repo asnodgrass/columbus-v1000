@@ -3,5 +3,7 @@ go:
 - 1.8.x
 notifications:
   slack:
+    on_success: change
+    on_failure: always
     secure: Csxw0h2RI2AWrVRAO89Wj1bbwEJRq1xJA647ZWtjYVYEUqkFTCrU4/wTa4SyIwhOBViBr41o9I5NVp0mld9Br7TZZ6Hsw1dSi94lVWmP9bj/dL1MEuKXmKKxnRtF1Lg5lOXjm+fv3zeb2bWjH8dMbp2th5rXeEJ4V5bD7T1Ca3PkrZ8qsJo2lUSOnvYUetTSgQ4gxehskOQq0leRSZ64bPAKpTzoaZoXwt1+1wjo4eMQ9cyPjq1c1JBXcAlZXY3HMc6tnBozFAq1OexcqitGuJinMpqUpXaFMsUeFIKWv2tqmzpHBhyRAax6tZunrFw0Z2/oDC+thV2P8EjHymMow/L4VlaT2GZ40KWj8casAb/fUuYONtwqudk0TFKVjMG7POVvMime9WC10cTmtn+kCBCLpSVPjiGY3WdjQoGvYEQK4rowT71gU8kGKVLPmvgn/Dwe1GugjVacUW94+r+DKqtje84OuGVnf2XTYbgF3Omwk1aWWuKygy+my+ifQB1puwmo6CxAsJ/sxYrsOkODGDGP5F5lVnVaWquzFUOrvgkWSj+1ERJyprvq5vVGdGu6ekLSmbNmHo4BJh/XyWjZDIPAmdaNJzeOHwzZx6EDMbVFkxcC6wGvefWYT43vUAsoNILfZvr5ivsb2x8NYjxg1St/zkO72accjdNrG48RItY=
 after_success: test -n "$TRAVIS_TAG" && curl -sL https://git.io/goreleaser | bash
