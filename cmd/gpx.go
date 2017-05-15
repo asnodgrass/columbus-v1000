@@ -22,6 +22,8 @@ import (
   "os"
   "fmt"
   "log"
+  "path"
+  "strings"
   "time"
   "io"
   "io/ioutil"
@@ -69,7 +71,8 @@ var gpxCmd = &cobra.Command{
       trkpts = append(trkpts, recordToTrackPoint(rec))
     }
 
-    gpxData := generateGPX(trkpts)
+    name := filenamePrefix(inFile)
+    gpxData := generateGPX(trkpts, name)
     if outFile != "" {
       ioutil.WriteFile(outFile, gpxData, 0644)
     } else {
@@ -154,14 +157,14 @@ func recordToTrackPoint(rec v1000.Record) (trackPoint) {
   return tp
 }
 
-func generateGPX(trkpts []trackPoint) []byte {
+func generateGPX(trkpts []trackPoint, name string) []byte {
   trksegs := make([]trackSegment, 1)
   trksegs[0].TrackPoints = trkpts
 
   trk := track{
     TrackSegments: trksegs,
-    Name: "please fix me",
-    Description: "and this too",
+    Name: name,
+    Description: "V1000 gps tracklog data",
   }
 
   bounds := gpxBounds{
@@ -243,4 +246,14 @@ func maximumLongitude(trkpts []trackPoint) latLong {
     }
   }
   return high
+}
+
+func filenamePrefix(filename string) string {
+  f := path.Base(filename)
+  pos := strings.LastIndex(f, ".")
+  if pos == -1 {
+    return f
+  } else {
+    return f[:pos]
+  }
 }

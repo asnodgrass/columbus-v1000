@@ -140,3 +140,12 @@ func Test_maximumLongitude(t *testing.T) {
     t.Errorf("Expected %f, but got %f", expected, out)
   }
 }
+
+func Test_filenamePrefix(t *testing.T) {
+  expected := "foo.bar.baz"
+  t.Logf("Checking for valid filename prefix.. (expected: %s)", expected)
+  data := "/path/to/foo.bar.baz.gps"
+  if out := filenamePrefix(data); out != expected {
+    t.Errorf("Expected %s, but got %s", expected, out)
+  }
+}
