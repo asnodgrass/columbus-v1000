@@ -66,7 +66,7 @@ func ParseRecord(file *os.File) (Record, error) {
   if err != nil {
     return rec, err
   }
-  err = parseByte3(file, &rec)
+  err = parseTypeAndDir(file, &rec)
   if err != nil {
     return rec, err
   }
@@ -129,20 +129,19 @@ func parseIndex(file *os.File, rec *Record) (error) {
   return nil
 }
 
-// FIXME: rename this
-func parseByte3(file *os.File, rec *Record) (error) {
-  var byte3 byte
-  err := binary.Read(file, binary.BigEndian, &byte3)
+func parseTypeAndDir(file *os.File, rec *Record) (error) {
+  var blob byte
+  err := binary.Read(file, binary.BigEndian, &blob)
   if err != nil {
     return err
   }
-  if hasBit(byte3, 0) && !hasBit(byte3, 1) {
+  if hasBit(blob, 0) && !hasBit(blob, 1) {
     rec.Type = "P"
   } else {
     rec.Type = "T"
   }
-  rec.South = hasBit(byte3, 2)
-  rec.West = hasBit(byte3, 3)
+  rec.South = hasBit(blob, 2)
+  rec.West = hasBit(blob, 3)
   return nil
 }
 
