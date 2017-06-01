@@ -49,7 +49,7 @@ var csvCmd = &cobra.Command{
     var out *os.File
 
     if outFile != "" {
-      out, err = os.Open(outFile)
+      out, err = os.Create(outFile)
       if err != nil {
         fmt.Println(err)
         return
